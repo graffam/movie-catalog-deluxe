@@ -52,14 +52,14 @@ end
 get '/movies/:id' do
   @results = nil
   connect do |connection|
-    @results = connection.exec('SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id, movies.synopsis, cast_members.character, actors.name AS actor_name, actors.id
+    @results = connection.exec_params('SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id, movies.synopsis, cast_members.character, actors.name AS actor_name, actors.id
       FROM movies
       JOIN genres ON genres.id = movies.genre_id
       JOIN studios ON studios.id = movies.studio_id
       JOIN cast_members ON cast_members.movie_id = movies.id
       JOIN actors ON actors.id = cast_members.actor_id
-      WHERE cast_members.id = actor_id AND cast_members.movie_id = movies.id
-      ORDER BY movies.title;')
+      WHERE movies.id = $1
+      ORDER BY movies.title;',[params["id"]])
   end
   erb :'/movies/show'
 end
