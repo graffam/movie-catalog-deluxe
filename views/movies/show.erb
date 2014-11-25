@@ -1,0 +1,37 @@
+<!DOCTYPE.html>
+<html>
+  <head>
+    <title></title>
+    <style> </style>
+  </head>
+  <body>
+    <section class="movie">
+    <h1><%= @results[0]["title"] %> (<%=@results[0]["year"] %>)</h1>
+    <h3>
+      <%= @results[0]["genre"] %>
+      </br>
+      <%= @results[0]["studio"] %>
+    </h3>
+    <div class="info">
+      <p> <%= @results[0]["synopsis"] %> </p>
+    </div>
+    <table>
+      <tr>
+        <th>Actor</th>
+        <th>Character</th>
+      </tr>
+      <% @results.each do |actor| %>
+        <tr>
+          <td>
+            <a href="/actors/<%=actor["id"]%>"> <%= actor["actor_name"] %></a>
+          </td>
+          <td>
+            <%= actor["character"] %>
+          </td>
+        </tr>
+      <% end %>
+
+
+    </table>
+    </section>
+  </body>
