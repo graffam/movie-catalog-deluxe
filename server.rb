@@ -47,7 +47,7 @@ get '/movies' do
     JOIN studios ON studios.id = movies.studio_id'
   query += " ORDER BY movies.title" if sort_by == "movies"
   query += " ORDER BY movies.year" if sort_by == "year"
-  query += " ORDER BY movies.rating DESC" if sort_by == "rating"
+  query += " ORDER BY movies.rating DESC NULLS LAST" if sort_by == "rating"
   query += " ORDER BY genres.name" if sort_by == "genre"
   query += " ORDER BY studios.name" if sort_by == "studio"
   connect do |connection|
