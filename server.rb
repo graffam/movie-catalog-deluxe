@@ -38,28 +38,33 @@ end
 
 get '/movies' do
   @results = nil
-  connect do |connection|
-   @results =  connection.exec('
-    SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id
+  sort_by = params["sort_by"]
+  sort_by = "movies" if params["sort_by"] == nil
+  binding.pry
+  query = 'SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id
     FROM movies
     JOIN genres ON genres.id = movies.genre_id
-    JOIN studios ON studios.id = movies.studio_id
-    ORDER BY movies.title;')
+    JOIN studios ON studios.id = movies.studio_id'
+  query += " ORDER BY movies.title" if sort_by == "movies"
+  query += " ORDER BY moies.year" if sort_by == "year"
+  connect do |connection|
+   @results =  connection.exec(query)
   end
   erb :'/movies/index'
 end
 
 get '/movies/:id' do
   @results = nil
-  connect do |connection|
-    @results = connection.exec_params('SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id, movies.synopsis, cast_members.character, actors.name AS actor_name, actors.id
+  id = params["id"]
+  query = 'SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id, movies.synopsis, cast_members.character, actors.name AS actor_name, actors.id
       FROM movies
       JOIN genres ON genres.id = movies.genre_id
       JOIN studios ON studios.id = movies.studio_id
       JOIN cast_members ON cast_members.movie_id = movies.id
       JOIN actors ON actors.id = cast_members.actor_id
-      WHERE movies.id = $1
-      ORDER BY movies.title;',[params["id"]])
+      WHERE movies.id = ' + id
+  connect do |connection|
+    @results = connection.exec(query)
   end
   erb :'/movies/show'
 end
