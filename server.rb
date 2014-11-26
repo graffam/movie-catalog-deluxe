@@ -40,17 +40,18 @@ get '/movies' do
   @results = nil
   sort_by = params["sort_by"]
   sort_by = "movies" if params["sort_by"] == nil
-  binding.pry
-  query = 'SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id
+    query =
+    'SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id
     FROM movies
     JOIN genres ON genres.id = movies.genre_id
     JOIN studios ON studios.id = movies.studio_id'
   query += " ORDER BY movies.title" if sort_by == "movies"
   query += " ORDER BY movies.year" if sort_by == "year"
   query += " ORDER BY movies.rating DESC" if sort_by == "rating"
+  query += " ORDER BY genres.name" if sort_by == "genre"
+  query += " ORDER BY studios.name" if sort_by == "studio"
   connect do |connection|
    @results =  connection.exec(query)
-   binding.pry
   end
   erb :'/movies/index'
 end
