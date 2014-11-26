@@ -50,8 +50,21 @@ get '/movies' do
   query += " ORDER BY movies.rating DESC NULLS LAST" if sort_by == "rating"
   query += " ORDER BY genres.name" if sort_by == "genre"
   query += " ORDER BY studios.name" if sort_by == "studio"
-  connect do |connection|
-   @results =  connection.exec(query)
+  if params["search_query"] != nil
+    query =
+    "SELECT movies.title, movies.year, movies.rating, genres.name AS genre, studios.name AS studio, movies.id
+    FROM movies
+    JOIN genres ON genres.id = movies.genre_id
+    JOIN studios ON studios.id = movies.studio_id
+    WHERE movies.title || movies.synopsis ILIKE $1"
+    binding.pry
+    connect do |connection|
+      @results =  connection.exec_params(query,["%#{params["search_query"]}%"])
+    end
+  else
+    connect do |connection|
+      @results =  connection.exec(query)
+    end
   end
   erb :'/movies/index'
 end
