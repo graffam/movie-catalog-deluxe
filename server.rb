@@ -46,9 +46,11 @@ get '/movies' do
     JOIN genres ON genres.id = movies.genre_id
     JOIN studios ON studios.id = movies.studio_id'
   query += " ORDER BY movies.title" if sort_by == "movies"
-  query += " ORDER BY moies.year" if sort_by == "year"
+  query += " ORDER BY movies.year" if sort_by == "year"
+  query += " ORDER BY movies.rating DESC" if sort_by == "rating"
   connect do |connection|
    @results =  connection.exec(query)
+   binding.pry
   end
   erb :'/movies/index'
 end
