@@ -13,26 +13,40 @@ def connect
   end
 end
 
+get '/actors/search/' do
+  params["search_query"] != nil
+    connect do |connection|
+      query =
+      'SELECT movies.title, cast_members.character, movies.id, actors.name,
+        COUNT (movies.title) AS count
+       FROM movies
+       JOIN cast_members ON cast_members.movie_id = movies.id
+       JOIN actors ON actors.id = cast_members.actor_id
+       WHERE actors.name ILIKE $1 GROUP BY movies.title, cast_members.character, movies.id, actors.name'
+      @results = connection.exec_params(query,["%#{params["search_query"]}%"])
+    end
+ erb :'/actors/search'
+end
+
 
 get '/actors' do
-  @results = nil
-  connect do |connection|
-   @results =  connection.exec('SELECT name, id FROM actors ORDER BY name')
- end
+    connect do |connection|
+      @results =  connection.exec('SELECT name, id FROM actors ORDER BY name')
+    end
+    binding.pry
  erb :'/actors/index'
 end
 
 get '/actors/:id' do
   @results = nil
-
   connect do |connection|
-   @results =  connection.exec_params(
-    'SELECT movies.title, cast_members.character, movies.id, actors.name
-     FROM movies
-     JOIN cast_members ON cast_members.movie_id = movies.id
-     JOIN actors ON actors.id = cast_members.actor_id
-     WHERE actors.id = $1', [params["id"]])
- end
+     @results =  connection.exec_params(
+      'SELECT movies.title, cast_members.character, movies.id, actors.name
+       FROM movies
+       JOIN cast_members ON cast_members.movie_id = movies.id
+       JOIN actors ON actors.id = cast_members.actor_id
+       WHERE actors.id = $1', [params["id"]])
+    end
  erb :'/actors/show'
 end
 

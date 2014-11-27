@@ -1,0 +1,27 @@
+<!DOCTYPE.html>
+<html>
+  <head>
+    <title></title>
+    <style> </style>
+  </head>
+  <body>
+    <section class="actor_list">
+
+        <ul>
+          <% @results.each do |actor| %>
+            <li>
+              <a href="/actors/<%=actor["id"]%>"> <%= actor["name"] %> </a>
+            </li>
+          <% end %>
+        </ul>
+    </section>
+  </body>
+
+
+
+
+
+
+
+
+</html>
