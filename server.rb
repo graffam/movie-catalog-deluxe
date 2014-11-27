@@ -22,7 +22,7 @@ get '/actors/search/' do
        FROM movies
        JOIN cast_members ON cast_members.movie_id = movies.id
        JOIN actors ON actors.id = cast_members.actor_id
-       WHERE actors.name ILIKE $1 GROUP BY movies.title, cast_members.character, movies.id, actors.name'
+       WHERE actors.name ILIKE $1 GROUP BY actors.name'
       @results = connection.exec_params(query,["%#{params["search_query"]}%"])
     end
  erb :'/actors/search'
@@ -70,7 +70,7 @@ get '/movies' do
     FROM movies
     JOIN genres ON genres.id = movies.genre_id
     JOIN studios ON studios.id = movies.studio_id
-    WHERE movies.title || movies.synopsis ILIKE $1"
+    WHERE movies.title ILIKE $1 OR movies.synopsis ILIKE $1"
     binding.pry
     connect do |connection|
       @results =  connection.exec_params(query,["%#{params["search_query"]}%"])
