@@ -16,13 +16,12 @@ end
 get '/actors/search/' do
   params["search_query"] != nil
     connect do |connection|
-      query =
-      'SELECT movies.title, cast_members.character, movies.id, actors.name,
-        COUNT (movies.title) AS count
-       FROM movies
-       JOIN cast_members ON cast_members.movie_id = movies.id
-       JOIN actors ON actors.id = cast_members.actor_id
-       WHERE actors.name ILIKE $1 GROUP BY actors.name'
+      query = "SELECT actors.name, actors.id,
+       COUNT (actors.name) AS count
+       FROM actors
+       JOIN cast_members ON cast_members.actor_id = actors.id
+       JOIN movies ON cast_members.movie_id = movies.id
+       WHERE actors.name ILIKE $1 GROUP BY actors.name, actors.id"
       @results = connection.exec_params(query,["%#{params["search_query"]}%"])
     end
  erb :'/actors/search'
